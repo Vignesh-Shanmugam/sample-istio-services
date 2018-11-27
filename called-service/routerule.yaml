@@ -1,0 +1,10 @@
+apiVersion: config.istio.io/v1alpha2
+kind: RouteRule
+metadata:
+  name: called-service
+spec:
+  destination:
+    name: called-service
+  route:
+  - labels:
+      version: v1

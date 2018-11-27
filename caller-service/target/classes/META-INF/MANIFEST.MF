@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Implementation-Title: caller-service
+Implementation-Version: 1.0.0-SNAPSHOT
+Built-By: s3931485
+Implementation-Vendor-Id: com.bns.api
+Build-Jdk: 1.8.0_191
+Implementation-URL: https://projects.spring.io/spring-boot/#/spring-bo
+ ot-starter-parent/caller-service
+Created-By: Maven Integration for Eclipse
+
