@@ -30,7 +30,7 @@ spec:
         version: v1
     spec:
       containers:
-      - image: piomin/caller-service:1.0
+      - image: bns/caller-service:1.0
         imagePullPolicy: IfNotPresent
         name: caller-service
         ports:
