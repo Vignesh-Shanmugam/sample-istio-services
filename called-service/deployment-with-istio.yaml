@@ -30,7 +30,7 @@ spec:
         version: v1
     spec:
       containers:
-      - image: bns/called-service:1.0
+      - image: gcr.io/ibesx-esa-sandbox-00f7f67a/bns/called-service:1.0
         imagePullPolicy: IfNotPresent
         name: called-service
         ports:
