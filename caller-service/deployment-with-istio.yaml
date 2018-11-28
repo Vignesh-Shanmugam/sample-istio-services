@@ -1,40 +1,41 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: caller-service
+  name: called-service
   labels:
-    app: caller-service
+    app: called-service
 spec:
   type: NodePort
   ports:
-  - port: 8090
+  - port: 8091
     name: http
   selector:
-    app: caller-service
+    app: called-service
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   creationTimestamp: null
-  name: caller-service
+  name: called-service
 spec:
   replicas: 1
   strategy: {}
   template:
     metadata:
       annotations:
-        sidecar.istio.io/status: '{"version":"43466efda2266e066fb5ad36f2d1658de02fc9411f6db00ccff561300a2a3c78","initContainers":["istio-init","enable-core-dump"],"containers":["istio-proxy"],"volumes":["istio-envoy","istio-certs"]}'
+        sidecar.istio.io/status: '{"version":"666176cf119f5520023f04b79663e0d1ebeaf2aece1864b5abf1547879b22129","initContainers":["istio-init"],"containers":["istio-proxy"],"volumes":["istio-envoy","istio-certs"],"imagePullSecrets":null}'
       creationTimestamp: null
       labels:
-        app: caller-service
+        app: called-service
         version: v1
     spec:
       containers:
-      - image: bns/caller-service:1.0
+      - image: bns/called-service:1.0
         imagePullPolicy: IfNotPresent
-        name: caller-service
+        name: called-service
         ports:
-        - containerPort: 8090
+        - containerPort: 8091
+        resources: {}
       - args:
         - proxy
         - sidecar
@@ -43,7 +44,7 @@ spec:
         - --binaryPath
         - /usr/local/bin/envoy
         - --serviceCluster
-        - caller-service
+        - called-service
         - --drainDuration
         - 45s
         - --parentShutdownDuration
@@ -57,7 +58,7 @@ spec:
         - --connectTimeout
         - 10s
         - --statsdUdpAddress
-        - istio-mixer.istio-system:9125
+        - istio-statsd-prom-bridge.istio-system:9125
         - --proxyAdminPort
         - "15000"
         - --controlPlaneAuthPolicy
@@ -75,12 +76,19 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: status.podIP
-        image: docker.io/istio/proxy:0.7.1
+        - name: ISTIO_META_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: ISTIO_META_INTERCEPTION_MODE
+          value: REDIRECT
+        image: gcr.io/istio-release/proxyv2:1.0.2
         imagePullPolicy: IfNotPresent
         name: istio-proxy
-        resources: {}
+        resources:
+          requests:
+            cpu: 10m
         securityContext:
-          privileged: false
           readOnlyRootFilesystem: true
           runAsUser: 1337
         volumeMounts:
@@ -95,7 +103,17 @@ spec:
         - "15001"
         - -u
         - "1337"
-        image: docker.io/istio/proxy_init:0.7.1
+        - -m
+        - REDIRECT
+        - -i
+        - '*'
+        - -x
+        - ""
+        - -b
+        - 8091,
+        - -d
+        - ""
+        image: gcr.io/istio-release/proxy_init:1.0.2
         imagePullPolicy: IfNotPresent
         name: istio-init
         resources: {}
@@ -103,18 +121,6 @@ spec:
           capabilities:
             add:
             - NET_ADMIN
-      - args:
-        - -c
-        - sysctl -w kernel.core_pattern=/etc/istio/proxy/core.%e.%p.%t && ulimit -c
-          unlimited
-        command:
-        - /bin/sh
-        image: alpine
-        imagePullPolicy: IfNotPresent
-        name: enable-core-dump
-        resources: {}
-        securityContext:
-          privileged: true
       volumes:
       - emptyDir:
           medium: Memory
