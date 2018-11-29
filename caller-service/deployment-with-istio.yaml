@@ -1,22 +1,22 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: caller-service
+  name: caller-service-v1
   labels:
-    app: caller-service
+    app: caller-service-v1
 spec:
   type: NodePort
   ports:
   - port: 8090
     name: http
   selector:
-    app: caller-service
+    app: caller-service-v1
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   creationTimestamp: null
-  name: caller-service
+  name: caller-service-v1
 spec:
   replicas: 1
   strategy: {}
@@ -26,15 +26,15 @@ spec:
         sidecar.istio.io/status: '{"version":"666176cf119f5520023f04b79663e0d1ebeaf2aece1864b5abf1547879b22129","initContainers":["istio-init"],"containers":["istio-proxy"],"volumes":["istio-envoy","istio-certs"],"imagePullSecrets":null}'
       creationTimestamp: null
       labels:
-        app: caller-service
+        app: caller-service-v1
         version: v1
     spec:
       containers:
       - image: gcr.io/ibesx-esa-sandbox-00f7f67a/bns/caller-service:1.0
         imagePullPolicy: IfNotPresent
-        name: caller-service
+        name: caller-service-v1
         ports:
-        - containerPort: 8090
+        - containerPort: 8092
         resources: {}
       - args:
         - proxy
@@ -62,7 +62,6 @@ spec:
         - --proxyAdminPort
         - "15000"
         - --controlPlaneAuthPolicy
-        - MUTUAL_TLS
         env:
         - name: POD_NAME
           valueFrom:
