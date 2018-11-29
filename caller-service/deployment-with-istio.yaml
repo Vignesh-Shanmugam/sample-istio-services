@@ -61,7 +61,6 @@ spec:
         - istio-statsd-prom-bridge.istio-system:9125
         - --proxyAdminPort
         - "15000"
-        - --controlPlaneAuthPolicy
         env:
         - name: POD_NAME
           valueFrom:
