@@ -1,40 +1,35 @@
-apiVersion: v1
-kind: Service
-metadata:
-  name: caller-service-v1
-  labels:
-    app: caller-service-v1
+    app: caller-service
 spec:
   type: NodePort
   ports:
   - port: 8090
     name: http
   selector:
-    app: caller-service-v1
+    app: caller-service
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   creationTimestamp: null
-  name: caller-service-v1
+  name: caller-service
 spec:
   replicas: 1
   strategy: {}
   template:
     metadata:
       annotations:
-        sidecar.istio.io/status: '{"version":"666176cf119f5520023f04b79663e0d1ebeaf2aece1864b5abf1547879b22129","initContainers":["istio-init"],"containers":["istio-proxy"],"volumes":["istio-envoy","istio-certs"],"imagePullSecrets":null}'
+        sidecar.istio.io/status: '{"version":"ebf16d3ea0236e4b5cb4d3fc0f01da62e2e6265d005e58f8f6bd43a4fb672fdd","initContainers":["istio-init"],"containers":["istio-proxy"],"volumes":["istio-envoy","istio-certs"],"imagePullSecrets":null}'
       creationTimestamp: null
       labels:
-        app: caller-service-v1
+        app: caller-service
         version: v1
     spec:
       containers:
-      - image: gcr.io/ibesx-esa-sandbox-00f7f67a/bns/caller-service:1.0
+      - image: bns/caller-service:1.0
         imagePullPolicy: IfNotPresent
-        name: caller-service-v1
+        name: caller-service
         ports:
-        - containerPort: 8092
+        - containerPort: 8090
         resources: {}
       - args:
         - proxy
@@ -55,12 +50,12 @@ spec:
         - 1s
         - --zipkinAddress
         - zipkin.istio-system:9411
-        - --connectTimeout
+         - --connectTimeout
         - 10s
-        - --statsdUdpAddress
-        - istio-statsd-prom-bridge.istio-system:9125
         - --proxyAdminPort
         - "15000"
+        - --controlPlaneAuthPolicy
+        - MUTUAL_TLS
         env:
         - name: POD_NAME
           valueFrom:
@@ -80,9 +75,16 @@ spec:
               fieldPath: metadata.name
         - name: ISTIO_META_INTERCEPTION_MODE
           value: REDIRECT
-        image: gcr.io/istio-release/proxyv2:1.0.2
+        - name: ISTIO_METAJSON_LABELS
+          value: |
+            {"app":"caller-service","version":"v1"}
+        image: docker.io/istio/proxyv2:1.0.4
         imagePullPolicy: IfNotPresent
         name: istio-proxy
+        ports:
+        - containerPort: 15090
+          name: http-envoy-prom
+          protocol: TCP
         resources:
           requests:
             cpu: 10m
@@ -106,12 +108,12 @@ spec:
         - -i
         - '*'
         - -x
-        - ""
+         - ""
         - -b
-        - 8090,
+        - "8090"
         - -d
         - ""
-        image: gcr.io/istio-release/proxy_init:1.0.2
+        image: docker.io/istio/proxy_init:1.0.4
         imagePullPolicy: IfNotPresent
         name: istio-init
         resources: {}
@@ -119,6 +121,7 @@ spec:
           capabilities:
             add:
             - NET_ADMIN
+          privileged: true
       volumes:
       - emptyDir:
           medium: Memory
