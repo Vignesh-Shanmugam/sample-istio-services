@@ -1,21 +1,21 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: caller-service
+  name: callerservice
   labels:
-    app: caller-service
+    app: callerservice
 spec:
   ports:
   - port: 8090
     name: http
   selector:
-    app: caller-service
+    app: callerservice
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   creationTimestamp: null
-  name: caller-service
+  name: callerservice
 spec:
   replicas: 1
   strategy: {}
@@ -25,13 +25,13 @@ spec:
         sidecar.istio.io/status: '{"version":"ebf16d3ea0236e4b5cb4d3fc0f01da62e2e6265d005e58f8f6bd43a4fb672fdd","initContainers":["istio-init"],"containers":["istio-proxy"],"volumes":["istio-envoy","istio-certs"],"imagePullSecrets":null}'
       creationTimestamp: null
       labels:
-        app: caller-service
+        app: callerservice
         version: v1
     spec:
       containers:
       - image: gcr.io/ibesx-esa-sandbox-00f7f67a/bns/caller-service:1.0
         imagePullPolicy: IfNotPresent
-        name: caller-service
+        name: callerservice
         ports:
         - containerPort: 8090
         resources: {}
@@ -43,7 +43,7 @@ spec:
         - --binaryPath
         - /usr/local/bin/envoy
         - --serviceCluster
-        - caller-service
+        - callerservice
         - --drainDuration
         - 45s
         - --parentShutdownDuration
@@ -81,7 +81,7 @@ spec:
           value: REDIRECT
         - name: ISTIO_METAJSON_LABELS
           value: |
-            {"app":"caller-service","version":"v1"}
+            {"app":"callerservice","version":"v1"}
         image: docker.io/istio/proxyv2:1.0.4
         imagePullPolicy: IfNotPresent
         name: istio-proxy
