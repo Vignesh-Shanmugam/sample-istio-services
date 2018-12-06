@@ -35,3 +35,4 @@ spec:
       - args:
         - --controlPlaneAuthPolicy
         - MUTUAL_TLS
+---
