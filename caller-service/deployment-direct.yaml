@@ -63,6 +63,8 @@ spec:
         exact: /caller/check
     - uri:
         exact: /caller/ping
+    - uri:
+        exact: /caller/pingservice
     route:
     - destination:
         host: callerservice
