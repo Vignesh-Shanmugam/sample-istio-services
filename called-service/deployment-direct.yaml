@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
       - name: called-service
-        image: gcr.io/ibesx-esa-sandbox-00f7f67a/bns/called-service:1.0
+        image: gcr.io/ibesx-esa-sandbox-00f7f67a/bns/called-service:2.0
         resources:
           requests:
             cpu: "100m"
