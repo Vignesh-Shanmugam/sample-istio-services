@@ -39,7 +39,7 @@ metadata:
   name: called-service
 spec:
   hosts:
-  - "*"
+  - called-service.default.svc.cluster.local
   http:
   - match:
     - uri:
