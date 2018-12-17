@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
       - name: callerservice
-        image: gcr.io/ibesx-esa-sandbox-00f7f67a/bns/caller-service:4.0
+        image: gcr.io/ibesx-esa-sandbox-00f7f67a/bns/caller-service:5.0
         resources:
           requests:
             cpu: "100m"
@@ -64,7 +64,9 @@ spec:
     - uri:
         exact: /caller/ping
     - uri:
-        exact: /caller/pingservice
+        exact: /caller/pingvirtual
+    - uri:
+        exact: /caller/pingip    
     route:
     - destination:
         host: callerservice
