@@ -33,3 +33,21 @@ spec:
         ports:
         - containerPort: 8091
 ---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: called-service
+spec:
+  hosts:
+  - "*"
+  http:
+  - match:
+    - uri:
+        exact: /callme/check
+    - uri:
+        exact: /callme/ping
+    route:
+    - destination:
+        host: called-service
+        port:
+          number: 8091
