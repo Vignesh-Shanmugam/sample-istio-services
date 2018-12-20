@@ -78,7 +78,7 @@ kind: DestinationRule
 metadata:
   name: callerservice
 spec:
-  host: callerservice
+  host: "*.local"
   trafficPolicy:
     tls:
       mode: ISTIO_MUTUAL
