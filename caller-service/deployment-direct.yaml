@@ -90,7 +90,7 @@ spec:
 apiVersion: config.istio.io/v1alpha2
 kind: rule
 metadata:
-  name: apigee-rule
+  name: apigee-rule-callerservice
   namespace: istio-system
 spec:
   match: context.reporter.kind == "inbound" && destination.service == "callerservice.default.svc.cluster.local"
