@@ -64,9 +64,7 @@ spec:
     - uri:
         exact: /caller/ping
     - uri:
-        exact: /caller/pingvirtual
-    - uri:
-        exact: /caller/pingip    
+        exact: /caller/vets   
     route:
     - destination:
         host: callerservice
