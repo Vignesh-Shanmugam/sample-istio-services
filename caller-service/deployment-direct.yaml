@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
       - name: callerservice
-        image: gcr.io/ibesx-esa-sandbox-00f7f67a/bns/caller-service:6.0
+        image: gcr.io/ibesx-esa-sandbox-00f7f67a/bns/caller-service:7.0
         resources:
           requests:
             cpu: "100m"
