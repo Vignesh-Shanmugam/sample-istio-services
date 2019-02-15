@@ -1,0 +1,69 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: caller-service-jwt
+  labels:
+    app: caller-service-jwt
+spec:
+  ports:
+  - port: 8092
+    name: http
+  selector:
+    app: caller-service-jwt
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: caller-service-jwt
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: caller-service-jwt
+        version: v1
+    spec:
+      containers:
+      - name: caller-service-jwt
+        image: gcr.io/ibesx-esa-sandbox-00f7f67a/bns/caller-service-jwt:1.0
+        resources:
+          requests:
+            cpu: "100m"
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8092
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: caller-service-jwt
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - callerservice-gateway
+  http:
+  - match:
+    - uri:
+        exact: /jwtcaller/check
+    - uri:
+        exact: /jwtcaller/ping
+    route:
+    - destination:
+        host: caller-service-jwt
+        port:
+          number: 8092
+---        
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: caller-service-jwt
+spec:
+  host: "*.local"
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL
+  subsets:
+  - name: v1
+    labels:
+      version: v1
