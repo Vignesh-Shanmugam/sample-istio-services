@@ -91,7 +91,7 @@ metadata:
   name: apigee-rule-callerservice
   namespace: istio-system
 spec:
-  match: context.reporter.kind == "inbound" && destination.service == "callerservice.default.svc.cluster.local" 
+  match: context.reporter.kind == "inbound" && destination.service == "callerservice.default.svc.cluster.local" && source.labels["istio"] == "ingressgateway"
   actions:
   - handler: apigee-handler.apigee.istio-system
     instances:
